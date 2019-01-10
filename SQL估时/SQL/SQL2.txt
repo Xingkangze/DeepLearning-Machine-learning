@@ -1,0 +1,2 @@
+SET SESSION RESOURCE_POOL = qa_pool;
+select count(*) from v_log_push;

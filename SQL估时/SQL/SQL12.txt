@@ -1,0 +1,16 @@
+select campaign_id,
+sum(case when freq=1 then uv else 0 end) as "1次UV曝光量",	
+sum(case when freq=2 then uv else 0 end) as "2次UV曝光量",
+sum(case when freq=3 then uv else 0 end) as "3次UV曝光量	",
+sum(case when freq=4 then uv else 0 end) as "4次UV曝光量	",
+sum(case when freq=5 then uv else 0 end) as "5次UV曝光量	",
+sum(case when freq=6 then uv else 0 end) as "6次以上UV曝光量",
+sum(case when freq>=7 then uv else 0 end) as "7次以上UV曝光量"
+from 
+(
+SELECT campaign_id,freq ,count(*) as uv from 
+(
+SELECT max(campaign_id) as campaign_id,rmid,count(*) as freq from v_log_pv where campaign_id in (205169,205172) and pure_date>=20180810 and pure_date<=20180823
+group by rmid HAVING COUNT(DISTINCT campaign_id)=1
+) a 
+group by 1,2  )  c group by 1

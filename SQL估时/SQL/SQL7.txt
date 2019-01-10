@@ -1,0 +1,28 @@
+select 
+FreqTransform(
+count(distinct case when d_pg like '%1103480%' then rmid else null end),
+count(distinct case when d_pg like '%1103802%' then rmid else null end),
+count(distinct case when d_pg like '%1103500%' then rmid else null end),
+count(distinct case when d_pg like '%1103563%' then rmid else null end),
+count(distinct case when d_pg like '%1104064%' then rmid else null end),
+count(distinct case when d_pg like '%1103805%' then rmid else null end),
+count(distinct case when d_pg like '%1103404%' then rmid else null end),
+count(distinct case when d_pg like '%1103507%' then rmid else null end),
+count(distinct case when d_pg like '%1103520%' then rmid else null end),
+count(distinct case when d_pg like '%1103483%' then rmid else null end),
+count(distinct case when d_pg like '%1104065%' then rmid else null end),
+count(distinct case when d_pg like '%1103762%' then rmid else null end),
+count(distinct case when d_pg like '%1103484%' then rmid else null end),
+count(distinct case when d_pg like '%1103101%' then rmid else null end),
+count(distinct case when d_pg like '%1103516%' then rmid else null end),
+count(distinct case when d_pg like '%1103977%' then rmid else null end),
+count(distinct case when d_pg like '%1104093%' then rmid else null end)
+using parameters colgroup='1103480,1103802,1103500,1103563,1104064,1103805,1103404,1103507,1103520,1103483,1104065,1103762,1103484,1103101,1103516,1103977,1104093') over(partition by campaign_id) as (campaign_id,tag_id,uv)
+from (select  d_pg , campaign_id , hash(rmid) as rmid  
+from v_log_push 
+where pure_date>=20181201 and pure_date<=20181216
+and campaign_id in (206910,206911,206912,206913,206914,206915,206916,206917,206918,206919,206920,206921,206922,206934,206935,206936,206937,206938,206939,206940,206941,206942,206943,206944,206945,206946,206947,206948,206949,206950,206951,206952,206953,206954,206955,206956,206957,206958,206959,206960,206961,206962,206963,206964,206965,206966,206967,206968,206969,206970,206971,206972,206973,206974,206975,206976,206977,206927,206928,206982,206990,206984,206978,206989,206979,206987,206986,206983,206988,206985,206980,206981,206995,207003,206997,206991,207002,206992,207000,206999,206996,207001,206998,206993,206994,207008,207016,207010,207004,207015,207005,207013,207012,207009,207014,207011,207006,207007,207020,207021,207032,207033)
+and ((d_pg like '%1103480%' ) or  (d_pg like '%1103802%' ) or  (d_pg like '%1103500%' ) or  (d_pg like '%1103563%' ) or  (d_pg like '%1104064%' ) or  (d_pg like '%1103805%' ) or  (d_pg like '%1103404%' ) or  (d_pg like '%1103507%' ) or  (d_pg like '%1103520%' ) or  (d_pg like '%1103483%' ) or  (d_pg like '%1104065%' ) or  (d_pg like '%1103762%' ) or  (d_pg like '%1103484%' ) or  (d_pg like '%1103101%' ) or  (d_pg like '%1103516%' ) or  (d_pg like '%1103977%' ) or  (d_pg like '%1104093%' ) ) 
+and p=1  
+order by 2,3,1)  a
+group by campaign_id

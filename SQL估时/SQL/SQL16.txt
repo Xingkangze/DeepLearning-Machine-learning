@@ -1,0 +1,2 @@
+SELECT pure_date,order_id,COUNT(*) as '曝光量',sum(case when ta>=ta_score and ta_score!=0 then 1 else 0 end) as ta
+from v_log_pv where pure_date>=20180629 and pure_date<=20180909 group by pure_date,order_id

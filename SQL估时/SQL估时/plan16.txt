@@ -1,0 +1,54 @@
+------------------------------ 
+QUERY PLAN DESCRIPTION: 
+------------------------------
+
+explain SELECT pure_date,order_id,COUNT(*) as '曝光量',sum(case when ta>=ta_score and ta_score!=0 then 1 else 0 end) as ta from v_log_pv where pure_date>=20180629 and pure_date<=20180909 group by pure_date,order_id
+
+Access Path:
++-GROUPBY HASH (GLOBAL RESEGMENT GROUPS) (LOCAL RESEGMENT GROUPS) [Cost: 35M, Rows: 97K] (PATH ID: 1)
+|  Aggregates: count(*), sum(CASE WHEN ((log_join_pv.ta >= log_join_pv.ta_score) AND (log_join_pv.ta_score <> 0)) THEN 1 ELSE 0 END)
+|  Group By: log_join_pv.pure_date, log_join_pv.order_id
+|  Execute on: All Nodes
+| +---> STORAGE ACCESS for log_join_pv [Cost: 25M, Rows: 5B] (PATH ID: 2)
+| |      Projection: public.dev_log_join_pv_super_b0
+| |      Materialize: log_join_pv.pure_date, log_join_pv.order_id, log_join_pv.ta, log_join_pv.ta_score
+| |      Filter: ((log_join_pv.pure_date >= 20180629) AND (log_join_pv.pure_date <= 20180909))
+| |      Execute on: All Nodes
+
+
+------------------------------ 
+----------------------------------------------- 
+PLAN: BASE QUERY PLAN (GraphViz Format)
+----------------------------------------------- 
+digraph G {
+graph [rankdir=BT, label = "BASE QUERY PLAN\nQuery: explain SELECT pure_date,order_id,COUNT(*) as \'曝光量\',sum(case when ta\>=ta_score and ta_score!=0 then 1 else 0 end) as ta from v_log_pv where pure_date\>=20180629 and pure_date\<=20180909 group by pure_date,order_id\n\nAll Nodes Vector: \n\n  node[0]=v_rmos_customer0001_node0002 (initiator) Up\n  node[1]=v_rmos_customer0001_node0001 (executor) Up\n  node[2]=v_rmos_customer0001_node0003 (executor) Up\n  node[3]=v_rmos_customer0001_node0004 (executor) Up\n  node[4]=v_rmos_customer0001_node0005 (executor) Up\n  node[5]=v_rmos_customer0001_node0006 (executor) Up\n  node[6]=v_rmos_customer0001_node0007 (executor) Up\n  node[7]=v_rmos_customer0001_node0008 (executor) Up\n  node[8]=v_rmos_customer0001_node0009 (executor) Up\n  node[9]=v_rmos_customer0001_node0010 (executor) Up\n", labelloc=t, labeljust=l ordering=out]
+0[label = "Root \nOutBlk=[UncTuple(4)]", color = "green", shape = "house"];
+1[label = "NewEENode \nOutBlk=[UncTuple(4)]", color = "green", shape = "box"];
+2[label = "Recv\nRecv from: v_rmos_customer0001_node0002,v_rmos_customer0001_node0001,v_rmos_customer0001_node0003,v_rmos_customer0001_node0004,v_rmos_customer0001_node0005,v_rmos_customer0001_node0006,v_rmos_customer0001_node0007,v_rmos_customer0001_node0008,v_rmos_customer0001_node0009,v_rmos_customer0001_node0010\nNet id: 1001\n\nUnc: Integer(8)\nUnc: Integer(8)\nUnc: Integer(8)\nUnc: Integer(8)", color = "green", shape = "box"];
+3[label = "Send\nSend to: v_rmos_customer0001_node0002\nNet id: 1001\n\nUnc: Integer(8)\nUnc: Integer(8)\nUnc: Integer(8)\nUnc: Integer(8)", color = "green", shape = "box"];
+4[label = "ParallelUnionStep: \nCombine\nUnc: Integer(8)\nUnc: Integer(8)\nUnc: Integer(8)\nUnc: Integer(8)", color = "green", shape = "box"];
+5[label = "GroupByHash(Spill): 2 keys\nAggs:\n  count(*)\n  sum(CASE WHEN ((log_join_pv.ta \>= log_join_pv.ta_score) AND (log_join_pv.ta_score \<\> 0)) THEN 1 ELSE 0 END)\nUnc: Integer(8)\nUnc: Integer(8)\nUnc: Integer(8)\nUnc: Integer(8)", color = "green", shape = "box"];
+6[label = "ParallelUnionStep: \nLocally Resegment\nUnc: Integer(8)\nUnc: Integer(8)\nUnc: Integer(8)\nUnc: Integer(8)", color = "green", shape = "box"];
+7[label = "Recv\nRecv from: v_rmos_customer0001_node0002,v_rmos_customer0001_node0001,v_rmos_customer0001_node0003,v_rmos_customer0001_node0004,v_rmos_customer0001_node0005,v_rmos_customer0001_node0006,v_rmos_customer0001_node0007,v_rmos_customer0001_node0008,v_rmos_customer0001_node0009,v_rmos_customer0001_node0010\nNet id: 1000\n\nUnc: Integer(8)\nUnc: Integer(8)\nUnc: Integer(8)\nUnc: Integer(8)", color = "green", shape = "box"];
+8[label = "Send\nSend to: v_rmos_customer0001_node0002,v_rmos_customer0001_node0001,v_rmos_customer0001_node0003,v_rmos_customer0001_node0004,v_rmos_customer0001_node0005,v_rmos_customer0001_node0006,v_rmos_customer0001_node0007,v_rmos_customer0001_node0008,v_rmos_customer0001_node0009,v_rmos_customer0001_node0010\nNet id: 1000\nResegment\n\nUnc: Integer(8)\nUnc: Integer(8)\nUnc: Integer(8)\nUnc: Integer(8)", color = "green", shape = "box"];
+9[label = "ParallelUnionStep: \nCombine\nUnc: Integer(8)\nUnc: Integer(8)\nUnc: Integer(8)\nUnc: Integer(8)", color = "green", shape = "box"];
+10[label = "GroupByHash: 2 keys\nAggs:\n  count(*)\n  sum(CASE WHEN ((log_join_pv.ta \>= log_join_pv.ta_score) AND (log_join_pv.ta_score \<\> 0)) THEN 1 ELSE 0 END)\nUnc: Integer(8)\nUnc: Integer(8)\nUnc: Integer(8)\nUnc: Integer(8)", color = "green", shape = "box"];
+11[label = "StorageUnionStep: dev_log_join_pv_super_b0\nLocally Resegment\nUnc: Integer(8)\nUnc: Integer(8)\nUnc: Integer(8)\nUnc: Integer(8)", color = "purple", shape = "box"];
+12[label = "GroupByPipe(HashPrepass): 2 keys\nAggs:\n  count(*)\n  sum(CASE WHEN ((log_join_pv.ta \>= log_join_pv.ta_score) AND (log_join_pv.ta_score \<\> 0)) THEN 1 ELSE 0 END)\nUnc: Integer(8)\nUnc: Integer(8)\nUnc: Integer(8)\nUnc: Integer(8)", color = "brown", shape = "box"];
+13[label = "ExprEval: \n  log_join_pv.pure_date\n  log_join_pv.order_id\n  1\n  CASE WHEN ((log_join_pv.ta \>= log_join_pv.ta_score) AND (log_join_pv.ta_score \<\> 0)) THEN 1 ELSE 0 END\nUnc: Integer(8)\nRLE: Integer(8)\nRLE: Integer(8)\nUnc: Integer(8)", color = "brown", shape = "box"];
+14[label = "ScanStep: dev_log_join_pv_super_b0\n((log_join_pv.pure_date \>= 20180629) AND (log_join_pv.pure_date \<= 20180909))\norder_id RLE\npure_date\nta\nta_score RLE\nRLE: Integer(8)\nUnc: Integer(8)\nUnc: Float(8)\nRLE: Float(8)", color = "brown", shape = "box"];
+1->0 [label = "V[0] C=4",color = "black",style="bold", arrowtail="inv"];
+2->1 [label = "0",color = "blue"];
+3->2 [label = "0",color = "blue"];
+4->3 [label = "0",color = "blue"];
+5->4 [label = "0",color = "blue"];
+6->5 [label = "0",color = "blue"];
+7->6 [label = "0",color = "blue"];
+8->7 [label = "0",color = "blue"];
+9->8 [label = "0",color = "blue"];
+10->9 [label = "0",color = "blue"];
+11->10 [label = "0",color = "blue"];
+12->11 [label = "0",color = "blue"];
+13->12 [label = "0",color = "blue"];
+14->13 [label = "0",color = "blue"];
+}

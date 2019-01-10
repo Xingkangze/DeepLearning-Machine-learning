@@ -1,0 +1,63 @@
+------------------------------ 
+QUERY PLAN DESCRIPTION: 
+------------------------------
+
+explain SELECT 101 ,rmid as '设备ID', to_char(date,'YYYYMMDDHHMISS') from v_log_push where pure_date>=20180709 and pure_date<=20180812 and campaign_id =204783 and publisher_id=101 and p=1 group by 1,2,3 having count(*)>1
+
+Access Path:
++-GROUPBY HASH (GLOBAL RESEGMENT GROUPS) (LOCAL RESEGMENT GROUPS) [Cost: 423K, Rows: 157 (PREDICATE VALUE OUT-OF-RANGE)] (PATH ID: 1)
+|  Aggregates: count(*)
+|  Group By: log_push.rmid, to_char(log_push.date, 'YYYYMMDDHHMISS')
+|  Filter: (<SVAR> > 1)
+|  Execute on: All Nodes
+| +---> STORAGE ACCESS for log_push [Cost: 423K, Rows: 157 (PREDICATE VALUE OUT-OF-RANGE)] (PATH ID: 2)
+| |      Projection: public.log_push_super_20180815_b0
+| |      Materialize: log_push.date, log_push.rmid
+| |      Filter: (log_push.campaign_id = 204783)
+| |      Filter: (log_push.valid = true)
+| |      Filter: ((log_push.pure_date >= 20180709) AND (log_push.pure_date <= 20180812))
+| |      Filter: (log_push.publisher_id = 101)
+| |      Filter: (log_push.p = 1)
+| |      Execute on: All Nodes
+
+
+------------------------------ 
+----------------------------------------------- 
+PLAN: BASE QUERY PLAN (GraphViz Format)
+----------------------------------------------- 
+digraph G {
+graph [rankdir=BT, label = "BASE QUERY PLAN\nQuery: explain SELECT 101 ,rmid as \'设备ID\', to_char(date,\'YYYYMMDDHHMISS\') from v_log_push where pure_date\>=20180709 and pure_date\<=20180812 and campaign_id =204783 and publisher_id=101 and p=1 group by 1,2,3 having count(*)\>1\n\nAll Nodes Vector: \n\n  node[0]=v_rmos_customer0001_node0002 (initiator) Up\n  node[1]=v_rmos_customer0001_node0001 (executor) Up\n  node[2]=v_rmos_customer0001_node0003 (executor) Up\n  node[3]=v_rmos_customer0001_node0004 (executor) Up\n  node[4]=v_rmos_customer0001_node0005 (executor) Up\n  node[5]=v_rmos_customer0001_node0006 (executor) Up\n  node[6]=v_rmos_customer0001_node0007 (executor) Up\n  node[7]=v_rmos_customer0001_node0008 (executor) Up\n  node[8]=v_rmos_customer0001_node0009 (executor) Up\n  node[9]=v_rmos_customer0001_node0010 (executor) Up\n", labelloc=t, labeljust=l ordering=out]
+0[label = "Root \nOutBlk=[UncTuple(3)]", color = "green", shape = "house"];
+1[label = "NewEENode \nOutBlk=[UncTuple(3)]", color = "green", shape = "box"];
+2[label = "Recv\nRecv from: v_rmos_customer0001_node0002,v_rmos_customer0001_node0001,v_rmos_customer0001_node0003,v_rmos_customer0001_node0004,v_rmos_customer0001_node0005,v_rmos_customer0001_node0006,v_rmos_customer0001_node0007,v_rmos_customer0001_node0008,v_rmos_customer0001_node0009,v_rmos_customer0001_node0010\nNet id: 1001\n\nUnc: Integer(8)\nUnc: Varchar(80)\nUnc: Varchar(114)", color = "green", shape = "box"];
+3[label = "Send\nSend to: v_rmos_customer0001_node0002\nNet id: 1001\n\nUnc: Integer(8)\nUnc: Varchar(80)\nUnc: Varchar(114)", color = "green", shape = "box"];
+4[label = "ParallelUnionStep: \nCombine\nUnc: Integer(8)\nUnc: Varchar(80)\nUnc: Varchar(114)", color = "green", shape = "box"];
+5[label = "ExprEval: \n  101\n  log_push.rmid\n  \<SVAR\>\nUnc: Integer(8)\nUnc: Varchar(80)\nUnc: Varchar(114)", color = "green", shape = "box"];
+6[label = "FilterStep: \n(\<SVAR\> \> 1)\nUnc: Varchar(80)\nUnc: Varchar(114)\nUnc: Integer(8)", color = "green", shape = "box"];
+7[label = "GroupByHash(Spill): 2 keys\nAggs:\n  count(*)\nUnc: Varchar(80)\nUnc: Varchar(114)\nUnc: Integer(8)", color = "green", shape = "box"];
+8[label = "ParallelUnionStep: \nLocally Resegment\nUnc: Varchar(80)\nUnc: Varchar(114)\nUnc: Integer(8)", color = "green", shape = "box"];
+9[label = "Recv\nRecv from: v_rmos_customer0001_node0002,v_rmos_customer0001_node0001,v_rmos_customer0001_node0003,v_rmos_customer0001_node0004,v_rmos_customer0001_node0005,v_rmos_customer0001_node0006,v_rmos_customer0001_node0007,v_rmos_customer0001_node0008,v_rmos_customer0001_node0009,v_rmos_customer0001_node0010\nNet id: 1000\n\nUnc: Varchar(80)\nUnc: Varchar(114)\nUnc: Integer(8)", color = "green", shape = "box"];
+10[label = "Send\nSend to: v_rmos_customer0001_node0002,v_rmos_customer0001_node0001,v_rmos_customer0001_node0003,v_rmos_customer0001_node0004,v_rmos_customer0001_node0005,v_rmos_customer0001_node0006,v_rmos_customer0001_node0007,v_rmos_customer0001_node0008,v_rmos_customer0001_node0009,v_rmos_customer0001_node0010\nNet id: 1000\nResegment\n\nUnc: Varchar(80)\nUnc: Varchar(114)\nUnc: Integer(8)", color = "green", shape = "box"];
+11[label = "ParallelUnionStep: \nCombine\nUnc: Varchar(80)\nUnc: Varchar(114)\nUnc: Integer(8)", color = "green", shape = "box"];
+12[label = "GroupByHash: 2 keys\nAggs:\n  count(*)\nUnc: Varchar(80)\nUnc: Varchar(114)\nUnc: Integer(8)", color = "green", shape = "box"];
+13[label = "StorageUnionStep: log_push_super_20180815_b0\nLocally Resegment\nUnc: Varchar(80)\nUnc: Varchar(114)\nUnc: Integer(8)", color = "purple", shape = "box"];
+14[label = "GroupByPipe(HashPrepass): 2 keys\nAggs:\n  count(*)\nUnc: Varchar(80)\nUnc: Varchar(114)\nUnc: Integer(8)", color = "brown", shape = "box"];
+15[label = "ExprEval: \n  log_push.rmid\n  to_char(log_push.date, \'YYYYMMDDHHMISS\')\n  1\nUnc: Varchar(80)\nUnc: Varchar(114)\nUnc: Integer(8)", color = "brown", shape = "box"];
+16[label = "ScanStep: log_push_super_20180815_b0\n(log_push.campaign_id = 204783)\n(log_push.valid = true)\n((log_push.pure_date \>= 20180709) AND (log_push.pure_date \<= 20180812))\n(log_push.publisher_id = 101)\n(log_push.p = 1)\ncampaign_id RLE (not emitted)\nvalid RLE (not emitted)\npure_date (not emitted)\ndate\nrmid\npublisher_id (not emitted)\np (not emitted)\nUnc: Timestamp(8)\nUnc: Varchar(80)", color = "brown", shape = "box"];
+1->0 [label = "V[0] C=3",color = "black",style="bold", arrowtail="inv"];
+2->1 [label = "0",color = "blue"];
+3->2 [label = "0",color = "blue"];
+4->3 [label = "0",color = "blue"];
+5->4 [label = "0",color = "blue"];
+6->5 [label = "0",color = "blue"];
+7->6 [label = "0",color = "blue"];
+8->7 [label = "0",color = "blue"];
+9->8 [label = "0",color = "blue"];
+10->9 [label = "0",color = "blue"];
+11->10 [label = "0",color = "blue"];
+12->11 [label = "0",color = "blue"];
+13->12 [label = "0",color = "blue"];
+14->13 [label = "0",color = "blue"];
+15->14 [label = "0",color = "blue"];
+16->15 [label = "0",color = "blue"];
+}

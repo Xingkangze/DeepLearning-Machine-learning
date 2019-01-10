@@ -1,0 +1,41 @@
+------------------------------ 
+QUERY PLAN DESCRIPTION: 
+------------------------------
+
+explain select count(*) from rm_report_basicinfo
+
+Access Path:
++-GROUPBY NOTHING [Cost: 2, Rows: 1] (PATH ID: 1)
+|  Aggregates: count(*)
+|  Execute on: All Nodes
+| +---> STORAGE ACCESS for rm_report_basicinfo [Cost: 1, Rows: 25B (1 RLE)] (PATH ID: 2)
+| |      Projection: public.rm_report_basicinfo_DBD_1_seg_basic_b0
+| |      Execute on: All Nodes
+
+
+------------------------------ 
+----------------------------------------------- 
+PLAN: BASE QUERY PLAN (GraphViz Format)
+----------------------------------------------- 
+digraph G {
+graph [rankdir=BT, label = "BASE QUERY PLAN\nQuery: explain select count(*) from rm_report_basicinfo\n\nAll Nodes Vector: \n\n  node[0]=v_rmos_customer0001_node0002 (initiator) Up\n  node[1]=v_rmos_customer0001_node0001 (executor) Up\n  node[2]=v_rmos_customer0001_node0003 (executor) Up\n  node[3]=v_rmos_customer0001_node0004 (executor) Up\n  node[4]=v_rmos_customer0001_node0005 (executor) Up\n  node[5]=v_rmos_customer0001_node0006 (executor) Up\n  node[6]=v_rmos_customer0001_node0007 (executor) Up\n  node[7]=v_rmos_customer0001_node0008 (executor) Up\n  node[8]=v_rmos_customer0001_node0009 (executor) Up\n  node[9]=v_rmos_customer0001_node0010 (executor) Up\n", labelloc=t, labeljust=l ordering=out]
+0[label = "Root \nOutBlk=[UncTuple]", color = "green", shape = "house"];
+1[label = "NewEENode \nOutBlk=[UncTuple]", color = "green", shape = "box"];
+2[label = "GroupByPipe: 0 keys\nAggs:\n  count(*)\nUnc: Integer(8)", color = "green", shape = "box"];
+3[label = "Recv\nRecv from: v_rmos_customer0001_node0002,v_rmos_customer0001_node0001,v_rmos_customer0001_node0003,v_rmos_customer0001_node0004,v_rmos_customer0001_node0005,v_rmos_customer0001_node0006,v_rmos_customer0001_node0007,v_rmos_customer0001_node0008,v_rmos_customer0001_node0009,v_rmos_customer0001_node0010\nNet id: 1000\n\nUnc: Integer(8)", color = "green", shape = "box"];
+4[label = "Send\nSend to: v_rmos_customer0001_node0002\nNet id: 1000\n\nUnc: Integer(8)", color = "green", shape = "box"];
+5[label = "GroupByPipe: 0 keys\nAggs:\n  count(*)\nUnc: Integer(8)", color = "green", shape = "box"];
+6[label = "StorageUnionStep: rm_report_basicinfo_DBD_1_seg_basic_b0\nUnc: Integer(8)", color = "purple", shape = "box"];
+7[label = "GroupByPipe: 0 keys\nAggs:\n  count(*)\nUnc: Integer(8)", color = "brown", shape = "box"];
+8[label = "ExprEval: \n  1\nRLE: Integer(8)", color = "brown", shape = "box"];
+9[label = "ScanStep: rm_report_basicinfo_DBD_1_seg_basic_b0\ncampaign_id RLE (not emitted)", color = "brown", shape = "box"];
+1->0 [label = "V[0]",color = "black"];
+2->1 [label = "0",color = "blue"];
+3->2 [label = "0",color = "blue"];
+4->3 [label = "0",color = "blue"];
+5->4 [label = "0",color = "blue"];
+6->5 [label = "0",color = "blue"];
+7->6 [label = "0",color = "blue"];
+8->7 [label = "0",color = "blue"];
+9->8 [label = "0",color = "blue"];
+}

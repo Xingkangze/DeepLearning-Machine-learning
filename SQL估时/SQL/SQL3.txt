@@ -1,0 +1,5 @@
+SET SESSION RESOURCE_POOL = qa_pool;
+select sum(case when dmp_tag like  '%d_m%'  then push else 0 end) as '秒针PV' , 
+       sum(case when dmp_tag like  '%d_a%'  then push else 0 end) as 'AdMasterPV' , 
+       sum(case when dmp_tag like  '%d_td%'  then push else 0 end) as 'Talking DATA PV' 
+from rm_report_basicinfo where  pure_date >=20180101 and pure_date<=

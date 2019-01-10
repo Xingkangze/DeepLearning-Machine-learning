@@ -1,0 +1,51 @@
+------------------------------ 
+QUERY PLAN DESCRIPTION: 
+------------------------------
+
+explain SELECT rmid from v_log_pV where pure_date>=20180709 and pure_date<=20180812 and order_id=2264081 and campaign_id=204783 group by 1 HAVING COUNT(rmid)=3
+
+Access Path:
++-GROUPBY HASH (LOCAL RESEGMENT GROUPS) [Cost: 63K, Rows: 1 (PREDICATE VALUE OUT-OF-RANGE)] (PATH ID: 1)
+|  Aggregates: count(log_join_pv.rmid)
+|  Group By: log_join_pv.rmid
+|  Filter: (<SVAR> = 3)
+|  Execute on: v_rmos_customer0001_node0009
+| +---> STORAGE ACCESS for log_join_pv [Cost: 63K, Rows: 1 (PREDICATE VALUE OUT-OF-RANGE)] (PATH ID: 2)
+| |      Projection: public.dev_log_join_pv_super_b0
+| |      Materialize: log_join_pv.rmid
+| |      Filter: (log_join_pv.campaign_id = 204783)
+| |      Filter: (log_join_pv.order_id = 2264081)
+| |      Filter: ((log_join_pv.pure_date >= 20180709) AND (log_join_pv.pure_date <= 20180812))
+| |      Execute on: v_rmos_customer0001_node0009
+
+
+------------------------------ 
+----------------------------------------------- 
+PLAN: BASE QUERY PLAN (GraphViz Format)
+----------------------------------------------- 
+digraph G {
+graph [rankdir=BT, label = "BASE QUERY PLAN\nQuery: explain SELECT rmid from v_log_pV where pure_date\>=20180709 and pure_date\<=20180812 and order_id=2264081 and campaign_id=204783 group by 1 HAVING COUNT(rmid)=3\n\nAll Nodes Vector: \n\n  node[0]=v_rmos_customer0001_node0002 (initiator) Up\n  node[1]=v_rmos_customer0001_node0001 (executor) Up\n  node[2]=v_rmos_customer0001_node0003 (executor) Up\n  node[3]=v_rmos_customer0001_node0004 (executor) Up\n  node[4]=v_rmos_customer0001_node0005 (executor) Up\n  node[5]=v_rmos_customer0001_node0006 (executor) Up\n  node[6]=v_rmos_customer0001_node0007 (executor) Up\n  node[7]=v_rmos_customer0001_node0008 (executor) Up\n  node[8]=v_rmos_customer0001_node0009 (remote initiator) Up\n  node[9]=v_rmos_customer0001_node0010 (executor) Up\n", labelloc=t, labeljust=l ordering=out]
+0[label = "Root \nOutBlk=[UncTuple]", color = "green", shape = "house"];
+1[label = "NewEENode \nOutBlk=[UncTuple]", color = "green", shape = "box"];
+2[label = "Recv\nRecv from: v_rmos_customer0001_node0009\nNet id: 1000\n\nUnc: Varchar(80)", color = "green", shape = "box"];
+3[label = "Send\nSend to: v_rmos_customer0001_node0002\nNet id: 1000\n\nUnc: Varchar(80)", color = "green", shape = "box"];
+4[label = "ParallelUnionStep: \nCombine\nUnc: Varchar(80)", color = "green", shape = "box"];
+5[label = "ExprEval: \n  log_join_pv.rmid\nUnc: Varchar(80)", color = "green", shape = "box"];
+6[label = "FilterStep: \n(\<SVAR\> = 3)\nUnc: Varchar(80)\nUnc: Integer(8)", color = "green", shape = "box"];
+7[label = "GroupByHash(Spill): 1 keys\nAggs:\n  count(log_join_pv.rmid)\nUnc: Varchar(80)\nUnc: Integer(8)", color = "green", shape = "box"];
+8[label = "StorageUnionStep: dev_log_join_pv_super_b0\nLocally Resegment\nUnc: Varchar(80)\nUnc: Integer(8)", color = "purple", shape = "box"];
+9[label = "GroupByPipe(HashPrepass): 1 keys\nAggs:\n  count(log_join_pv.rmid)\nUnc: Varchar(80)\nUnc: Integer(8)", color = "brown", shape = "box"];
+10[label = "ExprEval: \n  log_join_pv.rmid\n  log_join_pv.rmid\nUnc: Varchar(80)\nUnc: Varchar(80)", color = "brown", shape = "box"];
+11[label = "ScanStep: dev_log_join_pv_super_b0\n(log_join_pv.campaign_id = 204783)\n(log_join_pv.order_id = 2264081)\n((log_join_pv.pure_date \>= 20180709) AND (log_join_pv.pure_date \<= 20180812))\ncampaign_id RLE (not emitted)\norder_id RLE (not emitted)\npure_date (not emitted)\nrmid\nUnc: Varchar(80)", color = "brown", shape = "box"];
+1->0 [label = "V[0]",color = "black"];
+2->1 [label = "0",color = "blue"];
+3->2 [label = "0",color = "blue"];
+4->3 [label = "0",color = "blue"];
+5->4 [label = "0",color = "blue"];
+6->5 [label = "0",color = "blue"];
+7->6 [label = "0",color = "blue"];
+8->7 [label = "0",color = "blue"];
+9->8 [label = "0",color = "blue"];
+10->9 [label = "0",color = "blue"];
+11->10 [label = "0",color = "blue"];
+}

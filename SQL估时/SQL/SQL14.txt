@@ -1,0 +1,12 @@
+SELECT "RM活动ID","市场",
+sum("排期购买量") as '排期购买量',sum("排期推送量") as  '排期推送量',sum("推送量") as '推送量',sum("优选量") as '优选量',
+sum("曝光量") as '曝光量',sum("点击量") as '点击量',sum("推送TA量") as '推送TA量',sum("优选TA量") as '优选TA量',sum("曝光TA量") as '曝光TA量',
+case when TO_CHAR( max("日期"),'YYYYMMDD')=20180823 then max("推送Total UV") else 0 end as '推送Total UV',
+case when TO_CHAR( max("日期"),'YYYYMMDD')=20180823 then max("优选Total UV") else 0 end as '优选Total UV',
+case when TO_CHAR( max("日期"),'YYYYMMDD')=20180823 then max("曝光Total UV") else 0 end as '曝光Total UV',
+case when TO_CHAR( max("日期"),'YYYYMMDD')=20180823 then max("推送TA UV") else 0 end as '推送TA UV',
+case when TO_CHAR( max("日期"),'YYYYMMDD')=20180823 then max("优选TA UV") else 0 end as '优选TA UV',
+case when TO_CHAR( max("日期"),'YYYYMMDD')=20180823 then max("曝光TA UV") else 0 end as '曝光TA UV'
+from v_rmos_report_rm_mz_ad_market 
+where  TO_CHAR( "日期",'YYYYMMDD')>=20180725 and  TO_CHAR( "日期",'YYYYMMDD')<=20180823  and "RM活动ID" IN (204915,204916) 
+GROUP BY 1,2

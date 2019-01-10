@@ -1,0 +1,3 @@
+SELECT 101 ,rmid as '设备ID', to_char(date,'YYYYMMDDHHMISS') from v_log_push
+where pure_date>=20180709 and pure_date<=20180812 and campaign_id =204783  and  publisher_id=101 and p=1
+group by 1,2,3  having count(*)>1

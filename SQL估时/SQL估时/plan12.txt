@@ -1,0 +1,118 @@
+------------------------------ 
+QUERY PLAN DESCRIPTION: 
+------------------------------
+
+"explain select campaign_id, sum(case when freq=1 then uv else 0 end) as "1次UV曝光量", sum(case when freq=2 then uv else 0 end) as "2次UV曝光量", sum(case when freq=3 then uv else 0 end) as "3次UV曝光量	", sum(case when freq=4 then uv else 0 end) as "4次UV曝光量	", sum(case when freq=5 then uv else 0 end) as "5次UV曝光量	", sum(case when freq=6 then uv else 0 end) as "6次以上UV曝光量", sum(case when freq>=7 then uv else 0 end) as "7次以上UV曝光量" from ( SELECT campaign_id,freq ,count(*) as uv from ( SELECT max(campaign_id) as campaign_id,rmid,count(*) as freq from v_log_pv where campaign_id in (205169,205172) and pure_date>=20180810 and pure_date<=20180823 group by rmid HAVING COUNT(DISTINCT campaign_id)=1 ) a group by 1,2 ) c group by 1"
+
+Access Path:
++-GROUPBY PIPELINED (GLOBAL RESEGMENT GROUPS) [Cost: 62K, Rows: 1 (PREDICATE VALUE OUT-OF-RANGE)] (PATH ID: 1)
+|  Aggregates: sum(CASE WHEN (c.freq = 1) THEN c.uv ELSE 0 END), sum(CASE WHEN (c.freq = 2) THEN c.uv ELSE 0 END), sum(CASE WHEN (c.freq = 3) THEN c.uv ELSE 0 END), sum(CASE WHEN (c.freq = 4) THEN c.uv ELSE 0 END), sum(CASE WHEN (c.freq = 5) THEN c.uv ELSE 0 END), sum(CASE WHEN (c.freq = 6) THEN c.uv ELSE 0 END), sum(CASE WHEN (c.freq >= 7) THEN c.uv ELSE 0 END)
+|  Group By: c.campaign_id
+|  Execute on: All Nodes
+|  Execute on: All Nodes
+| +---> GROUPBY HASH (SORT OUTPUT) (GLOBAL RESEGMENT GROUPS) (LOCAL RESEGMENT GROUPS) [Cost: 62K, Rows: 1 (PREDICATE VALUE OUT-OF-RANGE)] (PATH ID: 3)
+| |      Aggregates: count(*)
+| |      Group By: a.campaign_id, a.freq
+| |      Execute on: All Nodes
+| |      Execute on: All Nodes
+| | +---> GROUPBY HASH (GLOBAL RESEGMENT GROUPS) (LOCAL RESEGMENT GROUPS) [Cost: 62K, Rows: 1 (PREDICATE VALUE OUT-OF-RANGE)] (PATH ID: 5)
+| | |      Aggregates: count(DISTINCT log_join_pv.campaign_id), max(<SVAR>), sum_of_count(*)
+| | |      Group By: log_join_pv.rmid
+| | |      Filter: (<SVAR> = 1)
+| | |      Execute on: All Nodes
+| | | +---> GROUPBY HASH (GLOBAL RESEGMENT GROUPS) (LOCAL RESEGMENT GROUPS) [Cost: 62K, Rows: 1 (PREDICATE VALUE OUT-OF-RANGE)] (PATH ID: 6)
+| | | |      Aggregates: max(log_join_pv.campaign_id), count(*)
+| | | |      Group By: log_join_pv.rmid, log_join_pv.campaign_id
+| | | |      Execute on: All Nodes
+| | | | +---> STORAGE ACCESS for log_join_pv [Cost: 62K, Rows: 1 (PREDICATE VALUE OUT-OF-RANGE)] (PATH ID: 7)
+| | | | |      Projection: public.dev_log_join_pv_super_b0
+| | | | |      Materialize: log_join_pv.campaign_id, log_join_pv.rmid
+| | | | |      Filter: (log_join_pv.campaign_id = ANY (ARRAY[205169, 205172]))
+| | | | |      Filter: ((log_join_pv.pure_date >= 20180810) AND (log_join_pv.pure_date <= 20180823))
+| | | | |      Execute on: All Nodes
+
+
+------------------------------ 
+----------------------------------------------- 
+PLAN: BASE QUERY PLAN (GraphViz Format)
+----------------------------------------------- 
+digraph G {
+"graph [rankdir=BT, label = "BASE QUERY PLAN\nQuery: explain select campaign_id, sum(case when freq=1 then uv else 0 end) as \"1次UV曝光量\", sum(case when freq=2 then uv else 0 end) as \"2次UV曝光量\", sum(case when freq=3 then uv else 0 end) as \"3次UV曝光量	\", sum(case when freq=4 then uv else 0 end) as \"4次UV曝光量	\", sum(case when freq=5 then uv else 0 end) as \"5次UV曝光量	\", sum(case when freq=6 then uv else 0 end) as \"6次以上UV曝光量\", sum(case when freq\>=7 then uv else 0 end) as \"7次以上UV曝光量\" from ( SELECT campaign_id,freq ,count(*) as uv from ( SELECT max(campaign_id) as campaign_id,rmid,count(*) as freq from v_log_pv where campaign_id in (205169,205172) and pure_date\>=20180810 and pure_date\<=20180823 group by rmid HAVING COUNT(DISTINCT campaign_id)=1 ) a group by 1,2 ) c group by 1\n\nAll Nodes Vector: \n\n  node[0]=v_rmos_customer0001_node0002 (initiator) Up\n  node[1]=v_rmos_customer0001_node0001 (executor) Up\n  node[2]=v_rmos_customer0001_node0003 (executor) Up\n  node[3]=v_rmos_customer0001_node0004 (executor) Up\n  node[4]=v_rmos_customer0001_node0005 (executor) Up\n  node[5]=v_rmos_customer0001_node0006 (executor) Up\n  node[6]=v_rmos_customer0001_node0007 (executor) Up\n  node[7]=v_rmos_customer0001_node0008 (executor) Up\n  node[8]=v_rmos_customer0001_node0009 (executor) Up\n  node[9]=v_rmos_customer0001_node0010 (executor) Up\n", labelloc=t, labeljust=l ordering=out]"
+0[label = "Root \nOutBlk=[UncTuple(8)]", color = "green", shape = "house"];
+1[label = "NewEENode \nOutBlk=[UncTuple(8)]", color = "green", shape = "box"];
+2[label = "Recv\nRecv from: v_rmos_customer0001_node0002,v_rmos_customer0001_node0001,v_rmos_customer0001_node0003,v_rmos_customer0001_node0004,v_rmos_customer0001_node0005,v_rmos_customer0001_node0006,v_rmos_customer0001_node0007,v_rmos_customer0001_node0008,v_rmos_customer0001_node0009,v_rmos_customer0001_node0010\nNet id: 1004\n\nUnc: Integer(8)\nUnc: Integer(8)\nUnc: Integer(8)\nUnc: Integer(8)\nUnc: Integer(8)\nUnc: Integer(8)\nUnc: Integer(8)\nUnc: Integer(8)", color = "green", shape = "box"];
+3[label = "Send\nSend to: v_rmos_customer0001_node0002\nNet id: 1004\n\nUnc: Integer(8)\nUnc: Integer(8)\nUnc: Integer(8)\nUnc: Integer(8)\nUnc: Integer(8)\nUnc: Integer(8)\nUnc: Integer(8)\nUnc: Integer(8)", color = "green", shape = "box"];
+4[label = "GroupByPipe: 1 keys\nAggs:\n  sum(CASE WHEN (c.freq = 1) THEN c.uv ELSE 0 END)\n  sum(CASE WHEN (c.freq = 2) THEN c.uv ELSE 0 END)\n  sum(CASE WHEN (c.freq = 3) THEN c.uv ELSE 0 END)\n  sum(CASE WHEN (c.freq = 4) THEN c.uv ELSE 0 END)\n  sum(CASE WHEN (c.freq = 5) THEN c.uv ELSE 0 END)\n  sum(CASE WHEN (c.freq = 6) THEN c.uv ELSE 0 END)\n  sum(CASE WHEN (c.freq \>= 7) THEN c.uv ELSE 0 END)\nUnc: Integer(8)\nUnc: Integer(8)\nUnc: Integer(8)\nUnc: Integer(8)\nUnc: Integer(8)\nUnc: Integer(8)\nUnc: Integer(8)\nUnc: Integer(8)", color = "green", shape = "box"];
+5[label = "Recv(keys = A)\nRecv from: v_rmos_customer0001_node0002,v_rmos_customer0001_node0001,v_rmos_customer0001_node0003,v_rmos_customer0001_node0004,v_rmos_customer0001_node0005,v_rmos_customer0001_node0006,v_rmos_customer0001_node0007,v_rmos_customer0001_node0008,v_rmos_customer0001_node0009,v_rmos_customer0001_node0010\nNet id: 1003\nMerge\n\nUnc: Integer(8)\nUnc: Integer(8)\nUnc: Integer(8)\nUnc: Integer(8)\nUnc: Integer(8)\nUnc: Integer(8)\nUnc: Integer(8)\nUnc: Integer(8)", color = "green", shape = "box"];
+6[label = "Send\nSend to: v_rmos_customer0001_node0002,v_rmos_customer0001_node0001,v_rmos_customer0001_node0003,v_rmos_customer0001_node0004,v_rmos_customer0001_node0005,v_rmos_customer0001_node0006,v_rmos_customer0001_node0007,v_rmos_customer0001_node0008,v_rmos_customer0001_node0009,v_rmos_customer0001_node0010\nNet id: 1003\nMerge\nResegment\n\nUnc: Integer(8)\nUnc: Integer(8)\nUnc: Integer(8)\nUnc: Integer(8)\nUnc: Integer(8)\nUnc: Integer(8)\nUnc: Integer(8)\nUnc: Integer(8)", color = "green", shape = "box"];
+7[label = "GroupByPipe: 1 keys\nAggs:\n  sum(CASE WHEN (c.freq = 1) THEN c.uv ELSE 0 END)\n  sum(CASE WHEN (c.freq = 2) THEN c.uv ELSE 0 END)\n  sum(CASE WHEN (c.freq = 3) THEN c.uv ELSE 0 END)\n  sum(CASE WHEN (c.freq = 4) THEN c.uv ELSE 0 END)\n  sum(CASE WHEN (c.freq = 5) THEN c.uv ELSE 0 END)\n  sum(CASE WHEN (c.freq = 6) THEN c.uv ELSE 0 END)\n  sum(CASE WHEN (c.freq \>= 7) THEN c.uv ELSE 0 END)\nUnc: Integer(8)\nUnc: Integer(8)\nUnc: Integer(8)\nUnc: Integer(8)\nUnc: Integer(8)\nUnc: Integer(8)\nUnc: Integer(8)\nUnc: Integer(8)", color = "green", shape = "box"];
+8[label = "ExprEval: \n  c.campaign_id\n  CASE WHEN (c.freq = 1) THEN c.uv ELSE 0 END\n  CASE WHEN (c.freq = 2) THEN c.uv ELSE 0 END\n  CASE WHEN (c.freq = 3) THEN c.uv ELSE 0 END\n  CASE WHEN (c.freq = 4) THEN c.uv ELSE 0 END\n  CASE WHEN (c.freq = 5) THEN c.uv ELSE 0 END\n  CASE WHEN (c.freq = 6) THEN c.uv ELSE 0 END\n  CASE WHEN (c.freq \>= 7) THEN c.uv ELSE 0 END\nUnc: Integer(8)\nUnc: Integer(8)\nUnc: Integer(8)\nUnc: Integer(8)\nUnc: Integer(8)\nUnc: Integer(8)\nUnc: Integer(8)\nUnc: Integer(8)", color = "green", shape = "box"];
+9[label = "ParallelMergeStep: 2 sorted\nCombine\nUnc: Integer(8)\nUnc: Integer(8)\nUnc: Integer(8)", color = "green", shape = "box"];
+10[label = "GroupByHash(Sort Groups)(Spill): 2 keys\nAggs:\n  count(*)\nUnc: Integer(8)\nUnc: Integer(8)\nUnc: Integer(8)", color = "green", shape = "box"];
+11[label = "ParallelUnionStep: \nLocally Resegment\nUnc: Integer(8)\nUnc: Integer(8)\nUnc: Integer(8)", color = "green", shape = "box"];
+12[label = "Recv\nRecv from: v_rmos_customer0001_node0002,v_rmos_customer0001_node0001,v_rmos_customer0001_node0003,v_rmos_customer0001_node0004,v_rmos_customer0001_node0005,v_rmos_customer0001_node0006,v_rmos_customer0001_node0007,v_rmos_customer0001_node0008,v_rmos_customer0001_node0009,v_rmos_customer0001_node0010\nNet id: 1002\n\nUnc: Integer(8)\nUnc: Integer(8)\nUnc: Integer(8)", color = "green", shape = "box"];
+13[label = "Send\nSend to: v_rmos_customer0001_node0002,v_rmos_customer0001_node0001,v_rmos_customer0001_node0003,v_rmos_customer0001_node0004,v_rmos_customer0001_node0005,v_rmos_customer0001_node0006,v_rmos_customer0001_node0007,v_rmos_customer0001_node0008,v_rmos_customer0001_node0009,v_rmos_customer0001_node0010\nNet id: 1002\nResegment\n\nUnc: Integer(8)\nUnc: Integer(8)\nUnc: Integer(8)", color = "green", shape = "box"];
+14[label = "ParallelUnionStep: \nCombine\nUnc: Integer(8)\nUnc: Integer(8)\nUnc: Integer(8)", color = "green", shape = "box"];
+15[label = "GroupByHash: 2 keys\nAggs:\n  count(*)\nUnc: Integer(8)\nUnc: Integer(8)\nUnc: Integer(8)", color = "green", shape = "box"];
+16[label = "ParallelUnionStep: \nLocally Resegment\nUnc: Integer(8)\nUnc: Integer(8)\nUnc: Integer(8)", color = "green", shape = "box"];
+17[label = "GroupByPipe(HashPrepass): 2 keys\nAggs:\n  count(*)\nUnc: Integer(8)\nUnc: Integer(8)\nUnc: Integer(8)", color = "green", shape = "box"];
+18[label = "ExprEval: \n  a.campaign_id\n  a.freq\n  1\nUnc: Integer(8)\nUnc: Integer(8)\nUnc: Integer(8)", color = "green", shape = "box"];
+19[label = "ExprEval: \n  \<SVAR\>\n  log_join_pv.rmid\n  \<SVAR\>\nUnc: Integer(8)\nUnc: Varchar(80)\nUnc: Integer(8)", color = "green", shape = "box"];
+20[label = "FilterStep: \n(\<SVAR\> = 1)\nUnc: Varchar(80)\nUnc: Integer(8)\nUnc: Integer(8)\nUnc: Integer(8)", color = "green", shape = "box"];
+21[label = "GroupByHash(Spill): 1 keys\nAggs:\n  count(DISTINCT log_join_pv.campaign_id)\n  max(\<SVAR\>)\n  sum_of_count(*)\nUnc: Varchar(80)\nUnc: Integer(8)\nUnc: Integer(8)\nUnc: Integer(8)", color = "green", shape = "box"];
+22[label = "ParallelUnionStep: \nLocally Resegment\nUnc: Varchar(80)\nUnc: Integer(8)\nUnc: Integer(8)\nUnc: Integer(8)", color = "green", shape = "box"];
+23[label = "Recv\nRecv from: v_rmos_customer0001_node0002,v_rmos_customer0001_node0001,v_rmos_customer0001_node0003,v_rmos_customer0001_node0004,v_rmos_customer0001_node0005,v_rmos_customer0001_node0006,v_rmos_customer0001_node0007,v_rmos_customer0001_node0008,v_rmos_customer0001_node0009,v_rmos_customer0001_node0010\nNet id: 1001\n\nUnc: Varchar(80)\nUnc: Integer(8)\nUnc: Integer(8)\nUnc: Integer(8)", color = "green", shape = "box"];
+24[label = "Send\nSend to: v_rmos_customer0001_node0002,v_rmos_customer0001_node0001,v_rmos_customer0001_node0003,v_rmos_customer0001_node0004,v_rmos_customer0001_node0005,v_rmos_customer0001_node0006,v_rmos_customer0001_node0007,v_rmos_customer0001_node0008,v_rmos_customer0001_node0009,v_rmos_customer0001_node0010\nNet id: 1001\nResegment\n\nUnc: Varchar(80)\nUnc: Integer(8)\nUnc: Integer(8)\nUnc: Integer(8)", color = "green", shape = "box"];
+25[label = "ParallelUnionStep: \nCombine\nUnc: Varchar(80)\nUnc: Integer(8)\nUnc: Integer(8)\nUnc: Integer(8)", color = "green", shape = "box"];
+26[label = "GroupByHash: 1 keys\nAggs:\n  count(DISTINCT log_join_pv.campaign_id)\n  max(\<SVAR\>)\n  sum_of_count(*)\nUnc: Varchar(80)\nUnc: Integer(8)\nUnc: Integer(8)\nUnc: Integer(8)", color = "green", shape = "box"];
+27[label = "ParallelUnionStep: \nLocally Resegment\nUnc: Varchar(80)\nUnc: Integer(8)\nUnc: Integer(8)\nUnc: Integer(8)", color = "green", shape = "box"];
+28[label = "GroupByPipe(HashPrepass): 1 keys\nAggs:\n  count(DISTINCT log_join_pv.campaign_id)\n  max(\<SVAR\>)\n  sum_of_count(*)\nUnc: Varchar(80)\nUnc: Integer(8)\nUnc: Integer(8)\nUnc: Integer(8)", color = "green", shape = "box"];
+29[label = "GroupByHash(Spill): 2 keys\nAggs:\n  max(log_join_pv.campaign_id)\n  count(*)\nUnc: Varchar(80)\nUnc: Integer(8)\nUnc: Integer(8)\nUnc: Integer(8)", color = "green", shape = "box"];
+30[label = "ParallelUnionStep: \nLocally Resegment\nUnc: Varchar(80)\nUnc: Integer(8)\nUnc: Integer(8)\nUnc: Integer(8)", color = "green", shape = "box"];
+31[label = "Recv\nRecv from: v_rmos_customer0001_node0002,v_rmos_customer0001_node0001,v_rmos_customer0001_node0003,v_rmos_customer0001_node0004,v_rmos_customer0001_node0005,v_rmos_customer0001_node0006,v_rmos_customer0001_node0007,v_rmos_customer0001_node0008,v_rmos_customer0001_node0009,v_rmos_customer0001_node0010\nNet id: 1000\n\nUnc: Varchar(80)\nUnc: Integer(8)\nUnc: Integer(8)\nUnc: Integer(8)", color = "green", shape = "box"];
+32[label = "Send\nSend to: v_rmos_customer0001_node0002,v_rmos_customer0001_node0001,v_rmos_customer0001_node0003,v_rmos_customer0001_node0004,v_rmos_customer0001_node0005,v_rmos_customer0001_node0006,v_rmos_customer0001_node0007,v_rmos_customer0001_node0008,v_rmos_customer0001_node0009,v_rmos_customer0001_node0010\nNet id: 1000\nResegment\n\nUnc: Varchar(80)\nUnc: Integer(8)\nUnc: Integer(8)\nUnc: Integer(8)", color = "green", shape = "box"];
+33[label = "ParallelUnionStep: \nCombine\nUnc: Varchar(80)\nUnc: Integer(8)\nUnc: Integer(8)\nUnc: Integer(8)", color = "green", shape = "box"];
+34[label = "GroupByHash: 2 keys\nAggs:\n  max(log_join_pv.campaign_id)\n  count(*)\nUnc: Varchar(80)\nUnc: Integer(8)\nUnc: Integer(8)\nUnc: Integer(8)", color = "green", shape = "box"];
+35[label = "StorageUnionStep: dev_log_join_pv_super_b0\nLocally Resegment\nUnc: Varchar(80)\nUnc: Integer(8)\nUnc: Integer(8)\nUnc: Integer(8)", color = "purple", shape = "box"];
+36[label = "GroupByPipe(HashPrepass): 2 keys\nAggs:\n  max(log_join_pv.campaign_id)\n  count(*)\nUnc: Varchar(80)\nUnc: Integer(8)\nUnc: Integer(8)\nUnc: Integer(8)", color = "brown", shape = "box"];
+37[label = "ExprEval: \n  log_join_pv.rmid\n  log_join_pv.campaign_id\n  log_join_pv.campaign_id\n  1\nUnc: Varchar(80)\nRLE: Integer(8)\nRLE: Integer(8)\nRLE: Integer(8)", color = "brown", shape = "box"];
+38[label = "ScanStep: dev_log_join_pv_super_b0\n(log_join_pv.campaign_id = ANY (ARRAY[205169, 205172]))\n((log_join_pv.pure_date \>= 20180810) AND (log_join_pv.pure_date \<= 20180823))\ncampaign_id RLE\npure_date (not emitted)\nrmid\nRLE: Integer(8)\nUnc: Varchar(80)", color = "brown", shape = "box"];
+1->0 [label = "V[0] C=8",color = "black",style="bold", arrowtail="inv"];
+2->1 [label = "0",color = "blue"];
+3->2 [label = "0",color = "blue"];
+4->3 [label = "0",color = "blue"];
+5->4 [label = "0",color = "blue"];
+6->5 [label = "0",color = "blue"];
+7->6 [label = "0",color = "blue"];
+8->7 [label = "0",color = "blue"];
+9->8 [label = "0",color = "blue"];
+10->9 [label = "0",color = "blue"];
+11->10 [label = "0",color = "blue"];
+12->11 [label = "0",color = "blue"];
+13->12 [label = "0",color = "blue"];
+14->13 [label = "0",color = "blue"];
+15->14 [label = "0",color = "blue"];
+16->15 [label = "0",color = "blue"];
+17->16 [label = "0",color = "blue"];
+18->17 [label = "0",color = "blue"];
+19->18 [label = "0",color = "blue"];
+20->19 [label = "0",color = "blue"];
+21->20 [label = "0",color = "blue"];
+22->21 [label = "0",color = "blue"];
+23->22 [label = "0",color = "blue"];
+24->23 [label = "0",color = "blue"];
+25->24 [label = "0",color = "blue"];
+26->25 [label = "0",color = "blue"];
+27->26 [label = "0",color = "blue"];
+28->27 [label = "0",color = "blue"];
+29->28 [label = "0",color = "blue"];
+30->29 [label = "0",color = "blue"];
+31->30 [label = "0",color = "blue"];
+32->31 [label = "0",color = "blue"];
+33->32 [label = "0",color = "blue"];
+34->33 [label = "0",color = "blue"];
+35->34 [label = "0",color = "blue"];
+36->35 [label = "0",color = "blue"];
+37->36 [label = "0",color = "blue"];
+38->37 [label = "0",color = "blue"];
+}

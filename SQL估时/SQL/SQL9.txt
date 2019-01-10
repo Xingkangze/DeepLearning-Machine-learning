@@ -1,0 +1,4 @@
+select a.campaign_id,a.publisher_id,b.region_name,COUNT(DISTINCT a.rmid) as 曝光TotalUV,count(*) as 曝光TotalPV 
+from v_log_pv a join rmos_order b on a.campaign_id =b.campaign_id and a.order_id=b.order_id 
+where a.pure_date >= 20180709 and a.pure_date<=20180812 and a.campaign_id=204783 and a.publisher_id=101
+group by 1,2,3

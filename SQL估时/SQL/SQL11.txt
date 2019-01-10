@@ -1,0 +1,7 @@
+SELECT  
+	rmid 
+from 
+	v_log_pV 
+where 
+	 pure_date>=20180709 and pure_date<=20180812 and order_id=2264081 and campaign_id=204783
+group by 1 HAVING COUNT(rmid)=3

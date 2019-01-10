@@ -1,0 +1,7 @@
+SELECT publisher_id,campaign_id, 
+ d_ym ,count(*)
+d_ym,count(*) as 'PV'
+from v_log_push
+where pure_date=20180830 and publisher_id in (102,11,12,115) and campaign_id in (205516,205526) and ( d_ym like '%CfK6B%'
+or d_ym like '%C5NBe%')
+group by 1,2,3

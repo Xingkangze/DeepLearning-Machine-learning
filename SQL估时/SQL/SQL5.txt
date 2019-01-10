@@ -1,0 +1,21 @@
+select 
+'推送'as a,
+sum(CASE WHEN (推送PV = 1) THEN 1 ELSE 0 END) AS freq_1, 
+sum(CASE WHEN (推送PV = 2) THEN 1 ELSE 0 END) AS freq_2, 
+sum(CASE WHEN (推送PV = 3) THEN 1 ELSE 0 END) AS freq_3, 
+sum(CASE WHEN (推送PV = 4) THEN 1 ELSE 0 END) AS freq_4, 
+sum(CASE WHEN (推送PV = 5) THEN 1 ELSE 0 END) AS freq_5, 
+sum(CASE WHEN (推送PV = 6) THEN 1 ELSE 0 END) AS freq_6, 
+sum(CASE WHEN (推送PV= 7) THEN 1 ELSE 0 END) AS freq_7, 
+sum(CASE WHEN (推送PV = 8) THEN 1 ELSE 0 END) AS freq_8, 
+sum(CASE WHEN (推送PV = 9) THEN 1 ELSE 0 END) AS freq_9, 
+sum(CASE WHEN (推送PV >= 10) THEN 1 ELSE 0 END) AS "freq_10+",  
+sum(CASE WHEN (推送PV > 0) THEN 1 ELSE 0 END) AS uv, 
+sum((推送PV * 1)) AS pv 
+FROM  (select a.rmid, count(*) as '推送PV' 
+from v_log_push a join rmos_order b on a.sourceID=b.order_id 
+where
+ pure_date >=20181210 and pure_date <=20181216 
+GROUP by 1) as a
+ WHERE 推送PV > 0 
+group by 1

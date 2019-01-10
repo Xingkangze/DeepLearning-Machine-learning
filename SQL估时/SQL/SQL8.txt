@@ -1,0 +1,11 @@
+SELECT  'pv' as 'pv',campaign_id,so as '权重得分',count(*) as '曝光PV',count(distinct rmid) as '曝光UV'  from v_log_pv  
+where pure_date>=20180705 and pure_date<=20180801 and campaign_id in (204738,204737,204736)  --and  p=1 
+group by 1,2,3
+union all
+SELECT  'push' as 'push',campaign_id,so as '权重得分',count(*) as '推送PV',count(distinct rmid) as '推送UV'  from v_log_push  
+where pure_date>=20180705 and pure_date<=20180801  and campaign_id in (204738,204737,204736) --and  p=1 
+group by 1,2,3
+union all
+SELECT  'p' as 'p',campaign_id,so as '权重得分',count(*) as '优选PV',count(distinct rmid) as '优选UV'  from v_log_push  
+where pure_date>=20180705 and pure_date<=20180801  and  p=1 and campaign_id in (204738,204737,204736)
+group by 1,2,3

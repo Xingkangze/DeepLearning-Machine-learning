@@ -1,0 +1,10 @@
+select "媒体id","ta","频道",sum(曝光量) as '曝光量',sum( 曝光UV) as '曝光UV',sum( 点击量) as '点击量',sum( 推送量) as '推送量',sum( 优选量) as '优选量' from 
+(SELECT a.publisher_id as '媒体id',a.ta,b.channel_name as '频道',COUNT(*) as '曝光量',count(distinct rmid ) as '曝光UV',0 as '点击量',0 as '推送量',0 as '优选量'
+from v_log_pv a join rmos_order b using(campaign_id,order_id) where a.campaign_id=206318 and  a.pure_date>=20181022 and a.pure_date<=20181028 group by 1,2,3
+union all
+SELECT a.publisher_id as '媒体id',a.ta,b.channel_name as '频道',0 as '曝光量',0 as '曝光UV',count(*) as '点击量',0 as '推送量',0 as '优选量'
+from v_log_click a join rmos_order b using(campaign_id,order_id) where a.campaign_id=206318 and  a.pure_date>=20181022 and a.pure_date<=20181028 group by 1,2,3
+union all
+SELECT a.publisher_id as '媒体id',a.ta,b.channel_name as '频道',0 as '曝光量',0 as '曝光UV',0 as '点击量',COUNT(*) as '推送量', sum(p) as '优选量'
+from v_log_push a join rmos_order b using(campaign_id,order_id) where a.campaign_id=206318 and  a.pure_date>=20181022 and a.pure_date<=20181028 group by 1,2,3
+) a group by 1,2,3

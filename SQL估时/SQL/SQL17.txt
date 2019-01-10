@@ -1,0 +1,2 @@
+SELECT pure_date,order_id,COUNT(*) as '点击量'
+from v_log_click where pure_date>=20180629 and pure_date<=20180909 group by pure_date,order_id
