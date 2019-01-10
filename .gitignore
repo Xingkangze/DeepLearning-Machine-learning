@@ -1,0 +1,14 @@
+#######################
+# Python Ignore files #
+#######################
+__pycache__/
+.ipynb_checkpoints/
+##########################
+# Jetbrains Ignore files #
+##########################
+.idea/
+##########################
+# CSV txt Ignore files #
+##########################
+.csv
+.txt
